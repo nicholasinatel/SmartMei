@@ -7,6 +7,7 @@ const fetch = require("node-fetch");
 const startDB = require("../src/database/mongodb");
 
 const mock = require("./mock/mutation");
+const queryMock = require("./mock/queryAPI");
 
 const { server, typeDefs, resolvers } = require("../src/server");
 const { url } = require("inspector");
@@ -226,7 +227,7 @@ describe("API Tests", function () {
       if (json.errors) {
         console.log(json.errors);
         // book4 = json.errors[0].data.id;
-        assert.equal(json.errors[0].message, "Book already lent");
+        assert.equal(json.errors[0].message, "User did not borrow this book");
       }
       if (json.data) {
         console.log(json.data);
@@ -236,9 +237,33 @@ describe("API Tests", function () {
     });
   });
 
-  //   describe("UserAPI DataSource", function () {
-  //     it("Query: user(id: ID)", async () => {});
-  //   });
+  describe("Query for Full Details about users", function () {
+    it("User 1", async function () {
+      const { user1 } = await queryMock(user1Id, null);
+      defaultOptions.body = {};
+      defaultOptions.body.query = user1;
+      defaultOptions.body = JSON.stringify(defaultOptions.body);
+
+      const response = await fetch(URL, defaultOptions);
+      const json = await response.json();
+      console.log("Query User 1");
+      console.log(json.data);
+      assert.equal(json.data.user.id, user1Id);
+    });
+
+    it("User 2", async function () {
+      const { user2 } = await queryMock(null, user2Id);
+      defaultOptions.body = {};
+      defaultOptions.body.query = user2;
+      defaultOptions.body = JSON.stringify(defaultOptions.body);
+
+      const response = await fetch(URL, defaultOptions);
+      const json = await response.json();
+      console.log("Query User 2");
+      console.log(json.data);
+      assert.equal(json.data.user.id, user2Id);
+    });
+  });
 
   this.afterAll(async function () {
     dbConnection.close();
