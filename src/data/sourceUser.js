@@ -34,6 +34,8 @@ class UserAPI extends DataSource {
       .populate(popLentBooks)
       .populate(popBorrowedBooks);
 
+    log({ userDb });
+
     const collectionBooks = await BookFormat(userDb.collectionBooks);
     const lentBooks = await BookLoanFormat(userDb.lentBooks);
     const borrowedBooks = await BookLoanFormat(userDb.borrowedBooks);
