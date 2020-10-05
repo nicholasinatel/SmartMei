@@ -42,6 +42,7 @@ class BookLoanAPI extends DataSource {
 
   async getBookLoan(id) {
     const bookLoan = await this.BookLoans.findById(id).populate("book");
+    logError({ bookLoan });
     return format(bookLoan);
   }
 }

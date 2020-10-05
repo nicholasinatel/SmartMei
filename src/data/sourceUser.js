@@ -102,9 +102,15 @@ class UserAPI extends DataSource {
     const lentBooks = user.lentBooks;
     let nuLentBooks = [];
 
+    log({ lentBooks });
+
     lentBooks.forEach((elem) => {
-      if (elem.toString() != bookLoanId.toString()) nuLentBooks.push(elem);
+      if (elem.toString() != bookLoanId.toString()) {
+        nuLentBooks.push(elem);
+      }
     });
+
+    log({ nuLentBooks });
 
     user.lentBooks = nuLentBooks;
     user.save();

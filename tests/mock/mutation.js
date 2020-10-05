@@ -1,4 +1,4 @@
-const mock = function (userId1, userId2) {
+const mock = function (userId1, userId2, bookId, bookId2) {
   const mutations = {
     createUser1: `
   mutation {
@@ -80,6 +80,51 @@ mutation {
   }
 }
 `,
+    lendBook1: `
+mutation {
+  lendBook(
+    loggedUserId: "${userId1}"
+    input: { bookId: "${bookId}", toUserId: "${userId2}" }
+  ) {
+    book {
+       title
+    }
+    fromUser
+    toUser
+    lentAt
+  }
+}
+`,
+lendBook2: `
+mutation {
+  lendBook(
+    loggedUserId: "${userId1}"
+    input: { bookId: "${bookId2}", toUserId: "${userId2}" }
+  ) {
+    book {
+       title
+    }
+    fromUser
+    toUser
+    lentAt
+  }
+}
+`,
+returnBook2: `
+mutation {
+  returnBook(
+    loggedUserId: "${userId2}"
+    bookId: "${bookId2}" 
+  ) {
+    book {
+       title
+    }
+    fromUser
+    toUser
+    lentAt
+  }
+}
+`
   };
 
   return mutations;

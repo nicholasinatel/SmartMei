@@ -23,7 +23,11 @@ const returnBook = {
 
     let borrower = false;
     borrowedBooks.forEach((elem) => {
-      if (elem.book.id == bookId) borrower = true;
+      const elemBookId = elem.book.id;
+      if (elemBookId.toString() === bookId.toString()) {
+        log({ elemBookId, bookId });
+        borrower = true;
+      }
     });
     return returnBook.resolve(borrower);
   },
@@ -39,13 +43,18 @@ const returnBook = {
 
   updateDb: async (userId, bookId, dataSources) => {
     // update bookLoan.returnedAt
+    log("updateDb");
     const borrowedBooks = await dataSources.userAPI.getBorrowedBooks({
       id: userId,
     });
     log({ borrowedBooks });
     let bookLoanId;
     borrowedBooks.forEach((elem) => {
-      if (elem.book.id == bookId) bookLoanId = elem.id;
+      const elemBookId = elem.book.id;
+      if (elemBookId.toString() == bookId.toString()) {
+        log({ elemBookId, bookId });
+        bookLoanId = elem.id;
+      }
     });
 
     const nuBookLoan = await dataSources.bookLoanAPI.updateBookLoan(bookLoanId);
@@ -63,7 +72,9 @@ const returnBook = {
       nuBookLoan.id
     );
 
-    return nuBookLoan;
+    const result = await dataSources.bookLoanAPI.getBookLoan(nuBookLoan.id);
+
+    return result;
   },
 };
 
