@@ -17,6 +17,11 @@ class UserAPI extends DataSource {
   initialize(config) {
     this.context = config.context;
   }
+  async checkUser(id) {
+    const userExists = await this.Users.findById(id);
+    if (userExists === null) return false;
+    if (userExists) return true;
+  }
 
   async findUser({ id }) {
     const popLentBooks = {
@@ -55,6 +60,7 @@ class UserAPI extends DataSource {
 
     if (userExist) {
       const error = new Error("User already exists");
+      error.data = { id: userExist._id };
       throw error;
     } else {
       log("Creating New User");
@@ -69,6 +75,67 @@ class UserAPI extends DataSource {
       // Return Entire User
       return createdUser;
     }
+  }
+
+  async updateUserBookCollection(id, book) {
+    let user = await this.Users.findById(id);
+    user.collectionBooks.push(book._id);
+    await user.save();
+  }
+
+  async updateUserLentBooks(id, bookId) {
+    let user = await this.Users.findById(id);
+    user.lentBooks.push(bookId);
+    const update = await user.save();
+  }
+
+  async updateUserBorrowedBooks(id, bookId) {
+    let user = await this.Users.findById(id);
+    user.borrowedBooks.push(bookId);
+    const update = await user.save();
+    log("Update Borrowed Books: %O", update);
+  }
+
+  async deleteUserLentBook(id, bookLoanId) {
+    let user = await this.Users.findById(id);
+
+    const lentBooks = user.lentBooks;
+    let nuLentBooks = [];
+
+    lentBooks.forEach((elem) => {
+      if (elem.toString() != bookLoanId.toString()) nuLentBooks.push(elem);
+    });
+
+    user.lentBooks = nuLentBooks;
+    user.save();
+  }
+
+  async deleteUserBorrowedBooks(id, bookLoanId) {
+    let user = await this.Users.findById(id);
+    const borrowedBooks = user.borrowedBooks;
+    let nuBorrowedBooks = [];
+
+    borrowedBooks.forEach((elem) => {
+      if (elem.toString() != bookLoanId.toString()) nuBorrowedBooks.push(elem);
+    });
+
+    user.borrowedBooks = nuBorrowedBooks;
+    user.save();
+  }
+
+  async collectionBooks(id) {
+    const user = await this.Users.findById(id).populate("collectionBooks");
+    return user;
+  }
+
+  async getLentBooks(userId) {
+    const { lentBooks } = await this.findUser(userId);
+    return lentBooks;
+  }
+
+  async getBorrowedBooks(userId) {
+    const { borrowedBooks } = await this.findUser(userId);
+    return borrowedBooks;
   }
 }
 

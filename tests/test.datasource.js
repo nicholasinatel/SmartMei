@@ -6,7 +6,7 @@ const fetch = require("node-fetch");
 
 const startDB = require("../src/database/mongodb");
 
-const { createUser } = require("./mock/mutation");
+const mock = require("./mock/mutation");
 
 const { server, typeDefs, resolvers } = require("../src/server");
 const { url } = require("inspector");
@@ -16,47 +16,84 @@ const dataSources = () => ({
 });
 
 const URL = "http://localhost:8080/";
+const defaultOptions = require("./mock/options");
 
-const options = {
-  method: "POST",
-  headers: {
-    "Accept-Encoding": "gzip, deflate, br",
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-    "Connection": "keep-alive",
-    'DNT': '1',
-    'Origin': 'http://localhost:8080'
-  },
-  body: JSON.stringify({
-    query: createUser,
-  }),
-};
+let user1Id, user2Id;
+let book1, book2, book3, book4;
+let bookLoan1, bookLoan2;
+let returnBook;
 
 describe("API Tests", function () {
   let dbConnection;
 
-  this.beforeAll(async () => {
+  this.beforeAll(async function () {
     dbConnection = await startDB();
     server.listen({ port: 8080 }).then(({ url }) => {
       log(`Server ready at ${url}`);
     });
   });
 
-  describe("UserAPI DataSource", async () => {
-    it("Mutation: createUser(input: CreateUserInput!): User!", async () => {
-      await fetch(URL, options)
-        .then((res) => res.json())
-        .then((json) => {
-          const error = json.errors;
-          const response = json.data.createUser;
+  describe("User Creation: ", function () {
+    /**
+     * This test suite must assert true
+     * for user being created
+     * or for user already created
+     */
+    const { createUser1, createUser2 } = mock(null, null);
+    it("User 1", async function () {
+      defaultOptions.body = {};
+      defaultOptions.body.query = createUser1;
+      defaultOptions.body = JSON.stringify(defaultOptions.body);
 
-          if(error){
-            assert.equal(error.message, 'User already exists')
-          }
-          if(response) {
-            assert.equal(response.name, 'yoda');
-          }
-        });
+      const response = await fetch(URL, defaultOptions);
+      const json = await response.json();
+      if (json.errors) {
+        user1Id = json.errors[0].data.id;
+        assert(json.errors[0].message, "User already exists");
+      }
+      if (json.data) {
+        user1Id = json.data.createUser.id;
+        assert(json.data.createUser.name, "yoda");
+      }
+      console.log({ user1Id });
+    });
+
+    it("User 2", async function () {
+      defaultOptions.body = {};
+      defaultOptions.body.query = createUser2;
+      defaultOptions.body = JSON.stringify(defaultOptions.body);
+
+      const response = await fetch(URL, defaultOptions);
+      const json = await response.json();
+      if (json.errors) {
+        user2Id = json.errors[0].data.id;
+        assert(json.errors[0].message, "User already exists");
+      }
+      if (json.data) {
+        user2Id = json.data.createUser.id;
+        assert(json.data.createUser.name, "yoda");
+      }
+    });
+  });
+
+  describe("Add Book To My Collection ", function () {
+    it("Book 1, 2, 3", async function () {
+      const { addBook1ToMyCollection } = mock(user1Id, null);
+
+      defaultOptions.body = {};
+      defaultOptions.body.query = addBook1ToMyCollection;
+      defaultOptions.body = JSON.stringify(defaultOptions.body);
+
+      const response = await fetch(URL, defaultOptions);
+      const json = await response.json();
+      console.log(json);
+      if (json.errors) {
+        assert(json.errors[0].message, "Book already exists!");
+      }
+      if (json.data) {
+        // book1 = json.data.addBookToMyCollection.id;
+        assert(json.data.addBookToMyCollection.title, "1001 Discos para Ouvir");
+      }
     });
   });
 
@@ -64,7 +101,7 @@ describe("API Tests", function () {
   //     it("Query: user(id: ID)", async () => {});
   //   });
 
-  this.afterAll(async () => {
+  this.afterAll(async function () {
     dbConnection.close();
     server.stop();
   });

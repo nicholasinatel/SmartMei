@@ -21,21 +21,35 @@ const UserAPI = require("./data/sourceUser");
 const Users = require("./database/models/user");
 
 // Book Files
+const BookAPI = require("./data/sourceBook");
+const Books = require("./database/models/book");
+
 // BookLoan Files
+const BookLoanAPI = require("./data/sourceBookLoan");
+const BookLoans = require("./database/models/bookLoan");
 
 /**
  * * DataSource With MongoDb Model for Resolvers
  */
 const dataSources = () => ({
   userAPI: new UserAPI({ Users }),
+  bookAPI: new BookAPI({ Books }),
+  bookLoanAPI: new BookLoanAPI({ BookLoans }),
 });
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   dataSources,
-  uploads: false,
-  introspection: true,
+  uploads: false, // Bug From Apollo Server, Must pass false value
+  formatError(err) {
+    if (!err.originalError) {
+      return err;
+    }
+    const data = err.originalError.data;
+    const message = err.message || "An error occurred";
+    return { data: data, message: message };
+  },
 });
 
 /**
