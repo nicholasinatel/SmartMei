@@ -1,0 +1,24 @@
+{
+  "name": "smartmei",
+  "version": "1.0.0",
+  "description": "Web App for selection process at smartMei",
+  "main": "init.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasinatel/SmartMei.git"
+  },
+  "keywords": [
+    "node",
+    "graphql",
+    "apollo"
+  ],
+  "author": "Nicholas Fernandes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicholasinatel/SmartMei/issues"
+  },
+  "homepage": "https://github.com/nicholasinatel/SmartMei#readme"
+}
