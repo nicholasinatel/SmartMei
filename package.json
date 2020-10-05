@@ -5,7 +5,7 @@
   "main": "init.js",
   "scripts": {
     "start": "DEBUG=apollo* DEBUG_DEPTH=10 nodemon init.js",
-    "test": "DEBUG=apollo:test DEBUG_DEPTH=10 mocha ./tests/test*",
+    "test": "DEBUG=apollo:test* DEBUG_DEPTH=10 mocha ./tests/test*",
     "graphql": "DEBUG=apollo:graphql* DEBUG_DEPTH=10 nodemon init.js",
     "datasource": "DEBUG=apollo:dataSources* DEBUG_DEPTH=10 nodemon init.js"
   },

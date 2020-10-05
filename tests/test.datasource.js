@@ -56,7 +56,6 @@ describe("API Tests", function () {
         user1Id = json.data.createUser.id;
         assert(json.data.createUser.name, "yoda");
       }
-      console.log({ user1Id });
     });
 
     it("User 2", async function () {
@@ -78,7 +77,7 @@ describe("API Tests", function () {
   });
 
   describe("Add Book To My Collection ", function () {
-    it("Book 1, 2, 3", async function () {
+    it("Book 1", async function () {
       const { addBook1ToMyCollection } = mock(user1Id, null);
 
       defaultOptions.body = {};
@@ -87,13 +86,51 @@ describe("API Tests", function () {
 
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
-      console.log(json);
       if (json.errors) {
+        book1 = json.errors[0].data.id;
         assert(json.errors[0].message, "Book already exists!");
       }
       if (json.data) {
-        // book1 = json.data.addBookToMyCollection.id;
+        book1 = json.data.addBookToMyCollection.id;
         assert(json.data.addBookToMyCollection.title, "1001 Discos para Ouvir");
+      }
+    });
+
+    it("Book 2", async function () {
+      const { addBook2ToMyCollection } = mock(user1Id, null);
+
+      defaultOptions.body = {};
+      defaultOptions.body.query = addBook2ToMyCollection;
+      defaultOptions.body = JSON.stringify(defaultOptions.body);
+
+      const response = await fetch(URL, defaultOptions);
+      const json = await response.json();
+      if (json.errors) {
+        book2 = json.errors[0].data.id;
+        assert(json.errors[0].message, "Book already exists!");
+      }
+      if (json.data) {
+        book2 = json.data.addBookToMyCollection.id;
+        assert(json.data.addBookToMyCollection.title, "Lord Of The Rings");
+      }
+    });
+
+    it("Book 3", async function () {
+      const { addBook3ToMyCollection } = mock(user1Id, null);
+
+      defaultOptions.body = {};
+      defaultOptions.body.query = addBook3ToMyCollection;
+      defaultOptions.body = JSON.stringify(defaultOptions.body);
+
+      const response = await fetch(URL, defaultOptions);
+      const json = await response.json();
+      if (json.errors) {
+        book3 = json.errors[0].data.id;
+        assert(json.errors[0].message, "Book already exists!");
+      }
+      if (json.data) {
+        book3 = json.data.addBookToMyCollection.id;
+        assert(json.data.addBookToMyCollection.title, "Unfuck Yourself");
       }
     });
   });

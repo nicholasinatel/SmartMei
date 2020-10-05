@@ -9,12 +9,22 @@ const addBook = {
     const bookTitleToAdd = args.input.title;
     const bookToAdd = args.input;
 
-    const bookExist = await addBook.checkBook(bookCollection, bookTitleToAdd);
+    const { bookExist, existBookId } = await addBook.checkBook(
+      bookCollection,
+      bookTitleToAdd
+    );
 
-    return await addBook.resolve(bookExist, userId, bookToAdd, dataSources);
+    return await addBook.resolve(
+      bookExist,
+      userId,
+      bookToAdd,
+      dataSources,
+      existBookId
+    );
   },
 
-  resolve: async (bookExist, userId, bookToAdd, dataSources) => {
+  resolve: async (bookExist, userId, bookToAdd, dataSources, existBookId) => {
+    logError({ bookExist, existBookId });
     if (!bookExist) {
       const book = await dataSources.bookAPI.addBook(userId, bookToAdd);
       // Update User Collection of Books
@@ -25,22 +35,26 @@ const addBook = {
     } else {
       logError("Book Already Exists: %O", bookToAdd);
       const error = new Error("Book already exists!");
-      // console.log(bookExist);
-      // error.data = { id: bookExist._id };
+      logError({ existBookId });
+      error.data = { id: existBookId };
       throw error;
     }
   },
 
   checkBook: async (bookCollection, bookTitle) => {
     let bookExist = false;
-    bookCollection.forEach((elem) => {
-      if (elem.title == bookTitle) {
+    let existBookId;
+    await bookCollection.forEach((elem) => {
+      if (elem.title.toString() === bookTitle.toString()) {
         bookExist = true;
-      } else {
-        bookExist = false;
+        existBookId = elem._id;
       }
     });
-    return bookExist;
+    const result = {
+      bookExist: bookExist,
+      existBookId: existBookId,
+    };
+    return result;
   },
 
   //   existingBook: async (bookCollection, bookTitleToAdd) => {
