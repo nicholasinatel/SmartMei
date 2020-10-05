@@ -47,6 +47,29 @@ class UserAPI extends DataSource {
     );
     return user;
   }
+
+  async createUser(input) {
+    const userEmail = input.email.toString();
+    const userExist = await this.Users.findOne({ email: userEmail });
+    log({ userExist });
+
+    if (userExist) {
+      const error = new Error("User already exists");
+      throw error;
+    } else {
+      log("Creating New User");
+      const userName = input.name.toString();
+      // Create User
+      const UserModel = this.Users.model("user");
+      const newUser = new UserModel({
+        name: userName,
+        email: userEmail,
+      });
+      const createdUser = await newUser.save();
+      // Return Entire User
+      return createdUser;
+    }
+  }
 }
 
 module.exports = UserAPI;

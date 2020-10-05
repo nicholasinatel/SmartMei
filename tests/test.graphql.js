@@ -1,11 +1,11 @@
 const EasyGraphQLTester = require("easygraphql-tester");
 
-const log = require("debug")("apollo:test");
+const log = require("debug")("apollo:test:graphql");
 const logError = log.extend("error");
 
 const assert = require("assert");
 
-const startDB = require("./../src/database/mongodb");
+const startDB = require("../src/database/mongodb");
 const { validQuery, wrongQuery } = require("./mock/query");
 
 const {
@@ -15,13 +15,13 @@ const {
   resolvers,
   UserAPI,
   Users,
-} = require("./../src/server");
+} = require("../src/server");
 
-describe("Test Suit Case", function () {
+describe("GraphQL Test", function () {
   let dbConnection;
   let tester;
-
   this.beforeAll(async () => {
+    log("For Testing if Schema and Resolvers Are Ok");
     dbConnection = await startDB();
     const connection = await dbConnection.readyState;
     // Start Server here.

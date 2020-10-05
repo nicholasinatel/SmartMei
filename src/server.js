@@ -35,6 +35,7 @@ const server = new ApolloServer({
   resolvers,
   dataSources,
   uploads: false,
+  introspection: true,
 });
 
 /**
@@ -44,9 +45,6 @@ const server = new ApolloServer({
  */
 module.exports = {
   server,
-  dataSources,
   typeDefs,
   resolvers,
-  UserAPI,
-  Users,
 };

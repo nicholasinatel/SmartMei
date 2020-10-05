@@ -12,6 +12,7 @@ async function startDatabase() {
   await mongoose.connect(mongoURL, {
     useNewUrlParser: true,
     useFindAndModify: false,
+    poolSize: 10,
   });
 
   return mongoose.connection;
