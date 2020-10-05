@@ -18,6 +18,7 @@ const {
 } = require("../src/server");
 
 describe("GraphQL Test", function () {
+  this.timeout(35000);
   let dbConnection;
   let tester;
   this.beforeAll(async () => {

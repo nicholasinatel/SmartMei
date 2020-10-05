@@ -24,6 +24,7 @@ let bookLoan1, bookLoan2;
 let returnBook;
 
 describe("API Tests", function () {
+  this.timeout(35000);
   let dbConnection;
 
   this.beforeAll(async function () {
