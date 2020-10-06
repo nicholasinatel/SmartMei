@@ -39,7 +39,7 @@ class UserAPI extends DataSource {
       .populate(popLentBooks)
       .populate(popBorrowedBooks);
 
-    log({ userDb });
+    log("findUser: %O", userDb);
 
     const collectionBooks = await BookFormat(userDb.collectionBooks);
     const lentBooks = await BookLoanFormat(userDb.lentBooks);
@@ -102,7 +102,7 @@ class UserAPI extends DataSource {
     const lentBooks = user.lentBooks;
     let nuLentBooks = [];
 
-    log({ lentBooks });
+    log("deleteUserLentBook(): old-lent-books %O", lentBooks);
 
     lentBooks.forEach((elem) => {
       if (elem.toString() != bookLoanId.toString()) {
@@ -110,7 +110,7 @@ class UserAPI extends DataSource {
       }
     });
 
-    log({ nuLentBooks });
+    log("deleteUserLentBook(): new-lent-books %O", nuLentBooks);
 
     user.lentBooks = nuLentBooks;
     user.save();
@@ -121,9 +121,13 @@ class UserAPI extends DataSource {
     const borrowedBooks = user.borrowedBooks;
     let nuBorrowedBooks = [];
 
+    log("deleteUserBorrowedBook(): old-borrowed-books %O", borrowedBooks);
+
     borrowedBooks.forEach((elem) => {
       if (elem.toString() != bookLoanId.toString()) nuBorrowedBooks.push(elem);
     });
+
+    log("deleteUserBorrowedBook(): nu-borrowed-books %O", nuBorrowedBooks);
 
     user.borrowedBooks = nuBorrowedBooks;
     user.save();
@@ -140,8 +144,18 @@ class UserAPI extends DataSource {
   }
 
   async getBorrowedBooks(userId) {
-    const { borrowedBooks } = await this.findUser(userId);
-    return borrowedBooks;
+    const { borrowedBooks } = await this.Users.findById(userId).populate(
+      "borrowedBooks"
+    );
+
+    log("getBorrowedBooks(): %O", borrowedBooks);
+
+    let formattedBorrowedBooks = [];
+    borrowedBooks.forEach((elem) => {
+      formattedBorrowedBooks.push(format(elem));
+    });
+
+    return formattedBorrowedBooks;
   }
 }
 

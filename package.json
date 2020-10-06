@@ -6,6 +6,12 @@
   "scripts": {
     "start": "DEBUG=apollo* DEBUG_DEPTH=10 nodemon init.js",
     "test": "DEBUG=apollo:test* DEBUG_DEPTH=10 mocha ./tests/test*",
+    "test-full": "DEBUG=apollo* DEBUG_DEPTH=10 mocha ./tests/test*",
+    "test-user": "DEBUG=apollo:test:datasource:user DEBUG_DEPTH=10 mocha ./tests/test*",
+    "test-book": "DEBUG=apollo:test:datasource:book DEBUG_DEPTH=10 mocha ./tests/test*",
+    "test-loan": "DEBUG=apollo:test:datasource:loan DEBUG_DEPTH=10 mocha ./tests/test*",
+    "test-query": "DEBUG=apollo:test:datasource:query DEBUG_DEPTH=10 mocha ./tests/test*",
+    "test-error": "DEBUG=apollo:test:datasource:error DEBUG_DEPTH=10 mocha ./tests/test*",
     "graphql": "DEBUG=apollo:graphql* DEBUG_DEPTH=10 nodemon init.js",
     "datasource": "DEBUG=apollo:dataSources* DEBUG_DEPTH=10 nodemon init.js"
   },

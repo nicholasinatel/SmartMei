@@ -1,4 +1,8 @@
 const log = require("debug")("apollo:test:datasource");
+const logUser = log.extend("user");
+const logBook = log.extend("book");
+const logLoan = log.extend("loan");
+const logQuery = log.extend("query");
 const logError = log.extend("error");
 
 const assert = require("assert");
@@ -50,10 +54,12 @@ describe("API Tests", function () {
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
       if (json.errors) {
+        logError(json.errors[0]);
         user1Id = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "User already exists");
       }
       if (json.data) {
+        logUser(json.data);
         user1Id = json.data.createUser.id;
         assert.equal(json.data.createUser.name, "yoda");
       }
@@ -67,10 +73,12 @@ describe("API Tests", function () {
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
       if (json.errors) {
+        logError(json.errors[0]);
         user2Id = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "User already exists");
       }
       if (json.data) {
+        logUser(json.data);
         user2Id = json.data.createUser.id;
         assert.equal(json.data.createUser.name, "Darth Sidious");
       }
@@ -88,10 +96,12 @@ describe("API Tests", function () {
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
       if (json.errors) {
+        logError(json.errors[0]);
         book1 = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "Book already exists!");
       }
       if (json.data) {
+        logBook(json.data);
         book1 = json.data.addBookToMyCollection.id;
         assert.equal(
           json.data.addBookToMyCollection.title,
@@ -110,10 +120,12 @@ describe("API Tests", function () {
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
       if (json.errors) {
+        logError(json.errors[0]);
         book2 = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "Book already exists!");
       }
       if (json.data) {
+        logBook(json.data);
         book2 = json.data.addBookToMyCollection.id;
         assert.equal(
           json.data.addBookToMyCollection.title,
@@ -132,10 +144,12 @@ describe("API Tests", function () {
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
       if (json.errors) {
+        logError(json.errors[0]);
         book3 = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "Book already exists!");
       }
       if (json.data) {
+        logBook(json.data);
         book3 = json.data.addBookToMyCollection.id;
         assert.equal(json.data.addBookToMyCollection.title, "Unfuck Yourself");
       }
@@ -151,10 +165,12 @@ describe("API Tests", function () {
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
       if (json.errors) {
+        logError(json.errors[0]);
         book4 = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "Book already exists!");
       }
       if (json.data) {
+        logBook(json.data);
         book4 = json.data.addBookToMyCollection.id;
         assert.equal(
           json.data.addBookToMyCollection.title,
@@ -174,15 +190,18 @@ describe("API Tests", function () {
 
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
-      console.log({ json });
 
+      logLoan({
+        fromUser: `yoda ${user1Id}`,
+        toUser: `Darth Sidious ${user2Id}`,
+        json: json,
+      });
       if (json.errors) {
-        console.log(json.errors);
+        logError(json.errors[0]);
         // book4 = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "Book already lent");
       }
       if (json.data) {
-        console.log(json.data);
         // book4 = json.data.lendBook.id;
         assert.equal(json.data.lendBook.book.title, "1001 Discos para Ouvir");
       }
@@ -197,15 +216,19 @@ describe("API Tests", function () {
 
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
-      console.log({ json });
+
+      logLoan({
+        fromUser: `yoda ${user1Id}`,
+        toUser: `Darth Sidious ${user2Id}`,
+        json: json,
+      });
 
       if (json.errors) {
-        console.log(json.errors);
+        logError(json.errors[0]);
         // book4 = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "Book already lent");
       }
       if (json.data) {
-        console.log(json.data);
         // book4 = json.data.lendBook.id;
         assert.equal(json.data.lendBook.book.title, "Lord Of The Rings");
       }
@@ -222,15 +245,20 @@ describe("API Tests", function () {
 
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
-      console.log({ json });
+
+      logLoan({
+        fromUser: `Darth Sidious ${user2Id}`,
+        toUser: `yoda ${user1Id}`,
+        json: json,
+      });
 
       if (json.errors) {
-        console.log(json.errors);
+        logError(json.errors[0]);
         // book4 = json.errors[0].data.id;
         assert.equal(json.errors[0].message, "User did not borrow this book");
       }
       if (json.data) {
-        console.log(json.data);
+        logLoan("Return Book 2: %O", json.data);
         // book4 = json.data.lendBook.id;
         assert.equal(json.data.returnBook.book.title, "Lord Of The Rings");
       }
@@ -238,7 +266,7 @@ describe("API Tests", function () {
   });
 
   describe("Query for Full Details about users", function () {
-    it("User 1", async function () {
+    it("Query User 1 Test", async function () {
       const { user1 } = await queryMock(user1Id, null);
       defaultOptions.body = {};
       defaultOptions.body.query = user1;
@@ -246,12 +274,13 @@ describe("API Tests", function () {
 
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
-      console.log("Query User 1");
-      console.log(json.data);
+
+      logQuery("Query User 1: %O", json.data);
+
       assert.equal(json.data.user.id, user1Id);
     });
 
-    it("User 2", async function () {
+    it("Query User 2 Test", async function () {
       const { user2 } = await queryMock(null, user2Id);
       defaultOptions.body = {};
       defaultOptions.body.query = user2;
@@ -259,8 +288,9 @@ describe("API Tests", function () {
 
       const response = await fetch(URL, defaultOptions);
       const json = await response.json();
-      console.log("Query User 2");
-      console.log(json.data);
+
+      logQuery("Query User 2: %O", json.data);
+
       assert.equal(json.data.user.id, user2Id);
     });
   });

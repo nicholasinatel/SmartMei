@@ -30,10 +30,16 @@ class BookLoanAPI extends DataSource {
   }
 
   async updateBookLoan(bookLoanId) {
+    logError({ bookLoanId });
+
     let bookLoan = await this.BookLoans.findById(bookLoanId);
+
+    log("updateBookLoan -old-bookloan: %O", bookLoan);
 
     bookLoan.returnedAt = new Date().toISOString();
     let nuBookLoan = await bookLoan.save();
+
+    log("updateBookLoan -nu-bookloan: %O", nuBookLoan);
 
     nuBookLoan = format(nuBookLoan);
 
@@ -42,7 +48,7 @@ class BookLoanAPI extends DataSource {
 
   async getBookLoan(id) {
     const bookLoan = await this.BookLoans.findById(id).populate("book");
-    logError({ bookLoan });
+    log("getBookLoan(): %O", bookLoan);
     return format(bookLoan);
   }
 }

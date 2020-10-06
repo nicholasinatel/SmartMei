@@ -3,10 +3,8 @@ const logError = log.extend("error");
 
 const returnBook = {
   init: async (args, dataSources) => {
-    log("returnBook");
     const fromUserId = args.loggedUserId;
     const bookId = args.bookId;
-    log({ fromUserId, bookId });
     // check if user has the book to Return
     const ok = await returnBook.ownTheBook(fromUserId, bookId, dataSources);
     if (ok) {
@@ -15,24 +13,25 @@ const returnBook = {
   },
 
   ownTheBook: async (userId, bookId, dataSources) => {
-    const borrowedBooks = await dataSources.userAPI.getBorrowedBooks({
-      id: userId,
-    });
+    const borrowedBooks = await dataSources.userAPI.getBorrowedBooks(userId);
 
-    log({ borrowedBooks });
+    log("ownTheBook(): %O", borrowedBooks);
 
     let borrower = false;
     borrowedBooks.forEach((elem) => {
-      const elemBookId = elem.book.id;
-      if (elemBookId.toString() === bookId.toString()) {
-        log({ elemBookId, bookId });
-        borrower = true;
+      log(elem.book);
+      log({ bookId });
+      if (elem.book.toString() === bookId.toString()) {
+        if (elem.returnedAt === null) {
+          borrower = true;
+        }
       }
     });
     return returnBook.resolve(borrower);
   },
 
   resolve: async (borrower) => {
+    logError({ borrower });
     if (borrower) {
       return true;
     } else {
@@ -42,37 +41,40 @@ const returnBook = {
   },
 
   updateDb: async (userId, bookId, dataSources) => {
-    // update bookLoan.returnedAt
-    log("updateDb");
-    const borrowedBooks = await dataSources.userAPI.getBorrowedBooks({
-      id: userId,
-    });
-    log({ borrowedBooks });
+    logError({ userId });
+    const borrowedBooks = await dataSources.userAPI.getBorrowedBooks(userId);
+
+    log("updateDB(): %O", borrowedBooks);
+
     let bookLoanId;
     borrowedBooks.forEach((elem) => {
-      const elemBookId = elem.book.id;
+      const elemBookId = elem.book;
       if (elemBookId.toString() == bookId.toString()) {
         log({ elemBookId, bookId });
         bookLoanId = elem.id;
       }
     });
 
-    const nuBookLoan = await dataSources.bookLoanAPI.updateBookLoan(bookLoanId);
-    log({ nuBookLoan });
+    const formattedBookLoan = await dataSources.bookLoanAPI.updateBookLoan(
+      bookLoanId
+    );
+    log("updateDB(): formatted-bookloan %O", formattedBookLoan);
 
     // update user.lentBooks
     await dataSources.userAPI.deleteUserLentBook(
-      nuBookLoan.fromUser,
-      nuBookLoan.id
+      formattedBookLoan.fromUser,
+      formattedBookLoan.id
     );
 
     // update user.borrowedBooks
     await dataSources.userAPI.deleteUserBorrowedBooks(
-      nuBookLoan.toUser,
-      nuBookLoan.id
+      formattedBookLoan.toUser,
+      formattedBookLoan.id
     );
 
-    const result = await dataSources.bookLoanAPI.getBookLoan(nuBookLoan.id);
+    const result = await dataSources.bookLoanAPI.getBookLoan(
+      formattedBookLoan.id
+    );
 
     return result;
   },
