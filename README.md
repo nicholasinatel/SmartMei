@@ -13,11 +13,21 @@ Faz tempo que gostaria de aprender essa tecnologia e me pareceu a oportunidade p
 
 ## Setup & Run
 
+| Tecnologia |      Versão       |
+| :--------: | :---------------: |
+|  Node.js   | 12.8.4 lts/erbium |
+|    NPM     |      6.14.6       |
+
 1. Clonar este repositório
 2. `npm install`
-3. `npm start`
+3. `npm test`
+4. `npm start`
 
 Para o banco de dados foi utilizada a solução em nuvem MongoDb Atlas, todos os IP´s de entrada estão liberados, portanto não é necessário nenhuma configuração.
+
+Ao realizar o `npm test` insere-se informações de exemplo no MongoDb. Os teste unitários e de integração do Mocha, são feitos de forma que sempre exista um mínimo de informações no banco. Alguns testes você irá perceber que estão fazendo 2 testes em 1.
+
+Por exemplo a criação de usuário por teste, se o usuário já existir, ele espera que a mensagem de erro da validação correta seja enviada. Se o usuário não existir ele cria o usuário.
 
 <hr>
 
@@ -44,7 +54,7 @@ São 2 Formas de Testar
 Configurei uma Pipeline na CircleCI: https://app.circleci.com/pipelines/github/nicholasinatel/SmartMei
 
 No entanto, não descobri um jeito de compartilhar, nem gerar algum tipo de relatório, então aqui está um print comprovando:
-![title](docs/pipelinejpg.jpg)
+![image](docs/pipelinejpg.jpg)
 
 ## Regras de negócio
 
