@@ -1,13 +1,15 @@
 # Projeto Smart Mei Web App
 
-Decidi executar o projeto com a seguinte Stack:
+Stack do projetok:
 
 - Node
 - GraphQL
 - Apollo Server
 - MongoDb & Mongoose
 
-Faz tempo que gostaria de aprender essa tecnologia e me pareceu a oportunidade perfeita, este é o repositório final, eu criei outros 3 para testes e aprendizado mas que consistiam de partes da solução de forma desconexa.
+Não possuia conhecimentos prévios em GraphQL, no entanto é uma tecnologia que já tinha lido sobre e aproveitei a oportunidade para aprender.
+
+Decidi não usar Docker ou um Banco de dados local por motivos de praticidade quanto a disponibilizar o projeto.
 
 <hr>
 
@@ -28,6 +30,12 @@ Para o banco de dados foi utilizada a solução em nuvem MongoDb Atlas, todos os
 Ao realizar o `npm test` insere-se informações de exemplo no MongoDb. Os teste unitários e de integração do Mocha, são feitos de forma que sempre exista um mínimo de informações no banco. Alguns testes você irá perceber que estão fazendo 2 testes em 1.
 
 Por exemplo a criação de usuário por teste, se o usuário já existir, ele espera que a mensagem de erro da validação correta seja enviada. Se o usuário não existir ele cria o usuário.
+
+<hr>
+
+## Arquitetura do Projeto
+
+![image](docs/arquitetura.png)
 
 <hr>
 
